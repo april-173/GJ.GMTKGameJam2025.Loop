@@ -6,7 +6,7 @@ public class PlayerController : MonoBehaviour
 {
     [Header("玩家输入")]
     [Tooltip("玩家输入方向")]
-    [SerializeField] private Vector2 moveInput;
+    public Vector2 moveInput;
     [Tooltip("X输入计时器")]
     [SerializeField] private float moveInputXTimer;
     [Tooltip("Y输入计时器")]
@@ -28,7 +28,7 @@ public class PlayerController : MonoBehaviour
 
     [Header("移动权限")]
     [Tooltip("是否允许移动")]
-    public bool canMove;
+    [SerializeField] private bool canMove;
     [Space]
     [Tooltip("是否允许向上移动")]
     [SerializeField] private bool canUpMove;
@@ -42,6 +42,10 @@ public class PlayerController : MonoBehaviour
     [Tooltip("是否为禁锢状态")]
     public bool isConfinement;
 
+    [Header("障碍检测")]
+    [Tooltip("障碍检测图层")]
+    [SerializeField] private LayerMask obstacleCheckLayer;
+
     [Header("移动相关")]
     [Tooltip("移动耗时")]
     [SerializeField] private float moveDuration;
@@ -50,11 +54,13 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Vector2 moveDirection;
 
 
+
     private void Update()
     {
         Timer();
         GetInput();
         PlotCheckSystem();
+        ObstacleCheckSystem();
         MoveDirection();
         MoveController();
     }
@@ -114,10 +120,10 @@ public class PlayerController : MonoBehaviour
         Collider2D leftTouchCol = PlotColliderAcquisition(leftCheckPoint);
         Collider2D rightTouchCol = PlotColliderAcquisition(rightCheckPoint);
         // 根据是否获取到可移动地块的碰撞器判断是否可以往对应方向移动
-        if(upTouchCol != null) { canUpMove = true; } else {  canUpMove = false; }
-        if(downTouchCol != null) { canDownMove = true; } else { canDownMove= false; }
-        if(leftTouchCol != null) { canLeftMove = true; } else { canLeftMove= false; }
-        if(rightTouchCol != null) { canRightMove = true; } else { canRightMove= false; }
+        if (upTouchCol != null) { canUpMove = true; } else { canUpMove = false; }
+        if (downTouchCol != null) { canDownMove = true; } else { canDownMove = false; }
+        if (leftTouchCol != null) { canLeftMove = true; } else { canLeftMove = false; }
+        if (rightTouchCol != null) { canRightMove = true; } else { canRightMove = false; }
 
     }
 
@@ -143,9 +149,9 @@ public class PlayerController : MonoBehaviour
 
     #region < 移动权限管理 >
 
-    private void SwitchCanMove(bool b)
+    public void SwitchCanMove(bool b)
     {
-        if(isConfinement)
+        if (isConfinement)
         {
             canMove = false;
             return;
@@ -154,6 +160,56 @@ public class PlayerController : MonoBehaviour
         {
             canMove = b;
         }
+    }
+
+    #endregion
+
+    #region < 障碍检测系统 >
+
+    /// <summary>
+    /// 障碍检测系统
+    /// </summary>
+    private void ObstacleCheckSystem()
+    {
+        Collider2D upObstacleCol = ObstacleColliderAcquisition(upCheckPoint);
+        Collider2D downObstacleCol = ObstacleColliderAcquisition (downCheckPoint);
+        Collider2D leftObstacleCol = ObstacleColliderAcquisition(leftCheckPoint);
+        Collider2D rightObstacleCol = ObstacleColliderAcquisition(rightCheckPoint);
+
+        if (upObstacleCol != null)
+        {
+            canUpMove = false;
+        }
+        if (downObstacleCol != null)
+        {
+            canDownMove = false;
+        }
+        if(leftObstacleCol != null)
+        {
+            canLeftMove = false;
+        }
+        if(rightObstacleCol != null)
+        {
+            canRightMove = false;
+        }
+    }
+
+    /// <summary>
+    /// 障碍碰撞器获取
+    /// </summary>
+    /// <param name="checkPoint">检测点位置</param>
+    /// <returns>检测点接触的碰撞器</returns>
+    private Collider2D ObstacleColliderAcquisition(Transform checkPoint)
+    {
+        // 获取以 checkPoint.position 为中心， checkPointSize 为范围， 0 为旋转角度，只作用于 obstacleCheckLayer 图层的接触到的碰撞器组件
+        Collider2D TouchCol = Physics2D.OverlapBox(
+            checkPoint.position,
+            checkPointSize,
+            0,
+            obstacleCheckLayer
+            );
+
+        return TouchCol;
     }
 
     #endregion
@@ -243,7 +299,6 @@ public class PlayerController : MonoBehaviour
             // 计算插值进度（使用平滑的缓动函数）
             float t = EaseOutQuad(elapsedTime / moveDuration);
             //float t = elapsedTime / moveDuration;
-
             // 更新位置
             transform.position = Vector3.Lerp(startPosition, targetPosition, t);
 
@@ -255,6 +310,12 @@ public class PlayerController : MonoBehaviour
 
         // 确保精确到达目标位置
         transform.position = targetPosition;
+
+        transform.position = new Vector3(Mathf.RoundToInt(transform.position.x),Mathf.RoundToInt(transform.position.y),Mathf.RoundToInt(transform.position.z));
+
+        // 等待
+        yield return null;
+
         // 解除移动锁定
         SwitchCanMove(true);
     }
@@ -266,4 +327,5 @@ public class PlayerController : MonoBehaviour
     }
 
     #endregion
+
 }

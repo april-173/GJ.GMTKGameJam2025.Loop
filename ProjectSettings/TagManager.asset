@@ -6,6 +6,8 @@ TagManager:
   tags:
   - Wall
   - Road
+  - Transition
+  - Obstacle
   layers:
   - Default
   - TransparentFX
@@ -16,11 +18,11 @@ TagManager:
   - 
   - 
   - 
-  - 
+  - NoScreenCapture
   - Wall
   - Road
-  - 
-  - 
+  - Transition
+  - Obstacle
   - 
   - Player
   - 

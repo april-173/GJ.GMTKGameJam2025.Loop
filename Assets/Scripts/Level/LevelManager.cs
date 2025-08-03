@@ -21,6 +21,7 @@ public class LevelsManager : MonoBehaviour
 
     private void Start()
     {
+
         // 遍历子物体
         for (int i = 0; i < transform.childCount; i++)
         {

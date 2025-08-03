@@ -11,6 +11,6 @@ public class LevelSelection : MonoBehaviour
     /// <param name="levelNumber"></param>
     public void LevelSelectionButton(int levelNumber)
     {
-        StartCoroutine(levelsManager.SwitchLevelController(levelNumber));
+        levelsManager.targetLevelNumber = levelNumber;
     }
 }

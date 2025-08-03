@@ -159,6 +159,9 @@ public class SwitchDoor : MonoBehaviour
     /// <returns></returns>
     private IEnumerator SwitchDoorOpen()
     {
+        // 播放音效
+        AudioManager.instance.PlaySound(Globals.switchDoor);
+
         // 旋转实际用时
         float rotateElapsed = 0;
         // 起始旋转
@@ -236,6 +239,9 @@ public class SwitchDoor : MonoBehaviour
     /// <returns></returns>
     private IEnumerator SwitchDoorClose()
     {
+        // 播放音效
+        AudioManager.instance.PlaySound(Globals.switchDoor);
+
         // 旋转实际用时
         float rotateElapsed = 0;
         // 起始旋转

@@ -60,6 +60,9 @@ public class Destination : MonoBehaviour
         // 若未处于触发状态
         if(!isTrigger)
         {
+            // 播放音效
+            AudioManager.instance.PlaySound(Globals.destination);
+
             // 开启触发状态
             isTrigger = true;
             // 禁锢玩家

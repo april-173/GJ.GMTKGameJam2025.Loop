@@ -22,9 +22,15 @@ public class Transition : MonoBehaviour
         }
 
         // 获取玩家控制器组件
-        playerController = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerController>();
+        playerController = GameObject.FindGameObjectWithTag("Player")?.GetComponent<PlayerController>();
 
         StartCoroutine(StopTransition());
+    }
+
+    private void Update()
+    {
+        // 获取玩家控制器组件
+        playerController = GameObject.FindGameObjectWithTag("Player")?.GetComponent<PlayerController>();
     }
 
     #region < 场景过渡 >
@@ -35,8 +41,11 @@ public class Transition : MonoBehaviour
     /// <returns></returns>
     public IEnumerator StartTransition()
     {
-        // 玩家开启禁锢状态
-        playerController.isConfinement = true;
+        if(playerController != null)
+        {
+            // 玩家开启禁锢状态
+            playerController.isConfinement = true;
+        }
 
         // 安全检测
         if (transitionMaterial == null) yield break;
@@ -70,8 +79,12 @@ public class Transition : MonoBehaviour
         // 安全检测
         if (transitionMaterial == null) yield break;
 
-        // 玩家开启禁锢状态
-        playerController.isConfinement = true;
+        if (playerController != null)
+        {
+            // 玩家开启禁锢状态
+            playerController.isConfinement = true;
+
+        }
 
         // 关卡过渡实际用时
         float transitionElapsed = 0;
@@ -92,11 +105,13 @@ public class Transition : MonoBehaviour
         // 确保最终值精确
         transitionMaterial.SetFloat("_Slider", 2);
 
-        // 玩家关闭禁锢状态
-        playerController.isConfinement = false;
-
-        // 允许玩家移动
-        playerController.SwitchCanMove(true);
+        if (playerController != null)
+        {
+            // 玩家关闭禁锢状态
+            playerController.isConfinement = false;
+            // 允许玩家移动
+            playerController.SwitchCanMove(true);
+        }
     }
 
     #endregion
